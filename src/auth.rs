@@ -36,7 +36,8 @@ where
             .get("Authorization")
             .ok_or(AuthError::MissingCredentials)?
             .to_str()
-            .map_err(|_| AuthError::InvalidHeader)?;
+            .map_err(|_| AuthError::InvalidHeader)?
+            .to_string();
 
         // 2. Check that it starts with "Basic "
         let encoded = auth_header
@@ -58,9 +59,10 @@ where
             .split_once(':')
             .ok_or(AuthError::InvalidFormat)?;
 
-        // 5. Look up user in the database and verify password
+        // 5. Look up user in the database and verify password (async now)
         let user = db
-            .verify_user(username, password)
+            .verify_user(username.to_string(), password.to_string())
+            .await
             .map_err(|_| AuthError::InternalError)?;
 
         let (user_id, _) = user.ok_or(AuthError::Unauthorized)?;

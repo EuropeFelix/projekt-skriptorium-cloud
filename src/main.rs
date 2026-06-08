@@ -100,7 +100,8 @@ async fn register_handler(
 
     // Check if username already exists
     if db
-        .username_exists(&req.username)
+        .username_exists(req.username.clone())
+        .await
         .map_err(|_| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -123,12 +124,15 @@ async fn register_handler(
     })?;
 
     // Create the user
-    let user_id = db.create_user(&req.username, &password_hash).map_err(|_| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({ "error": "Failed to create user" })),
-        )
-    })?;
+    let user_id = db
+        .create_user(req.username.clone(), password_hash)
+        .await
+        .map_err(|_| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({ "error": "Failed to create user" })),
+            )
+        })?;
 
     tracing::info!("Created user '{}' with id {}", req.username, user_id);
 
@@ -146,7 +150,7 @@ async fn list_notes_handler(
     auth_user: AuthUser,
     State(db): State<Arc<Database>>,
 ) -> Result<Json<NotesListResponse>, (StatusCode, Json<serde_json::Value>)> {
-    let notes = db.list_notes(auth_user.user_id).map_err(|_| {
+    let notes = db.list_notes(auth_user.user_id).await.map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(serde_json::json!({ "error": "Failed to retrieve notes" })),
@@ -169,7 +173,8 @@ async fn create_note_handler(
     }
 
     let note_id = db
-        .create_note(auth_user.user_id, &req.title, &req.content)
+        .create_note(auth_user.user_id, req.title.clone(), req.content.clone())
+        .await
         .map_err(|_| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -204,7 +209,8 @@ async fn update_note_handler(
     }
 
     let updated = db
-        .update_note(note_id, auth_user.user_id, &req.title, &req.content)
+        .update_note(note_id, auth_user.user_id, req.title.clone(), req.content.clone())
+        .await
         .map_err(|_| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -234,12 +240,15 @@ async fn delete_note_handler(
     State(db): State<Arc<Database>>,
     Path(note_id): Path<i64>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let deleted = db.delete_note(note_id, auth_user.user_id).map_err(|_| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({ "error": "Failed to delete note" })),
-        )
-    })?;
+    let deleted = db
+        .delete_note(note_id, auth_user.user_id)
+        .await
+        .map_err(|_| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({ "error": "Failed to delete note" })),
+            )
+        })?;
 
     if !deleted {
         return Err((

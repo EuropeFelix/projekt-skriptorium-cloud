@@ -1,10 +1,11 @@
-use rusqlite::{params, Connection, Result};
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use rusqlite::{params, Connection, Result as SqliteResult};
+use std::sync::{Arc, Mutex};
 
 use crate::models::NoteResponse;
 
 /// A thread-safe wrapper around a SQLite connection.
+/// Uses `std::sync::Mutex` (not tokio::sync::Mutex) because all DB operations
+/// are offloaded to blocking threads via `tokio::task::spawn_blocking`.
 #[derive(Clone)]
 pub struct Database {
     conn: Arc<Mutex<Connection>>,
@@ -12,7 +13,7 @@ pub struct Database {
 
 impl Database {
     /// Opens or creates the SQLite database at `path` and ensures the schema exists.
-    pub fn new(path: &str) -> Result<Self> {
+    pub fn new(path: &str) -> SqliteResult<Self> {
         let conn = Connection::open(path)?;
 
         // Enable WAL mode for better concurrent read performance
@@ -22,15 +23,15 @@ impl Database {
             conn: Arc::new(Mutex::new(conn)),
         };
 
-        db.initialize_tables()?;
+        db.initialize_tables_sync()?;
 
         tracing::info!("Database initialized at {}", path);
         Ok(db)
     }
 
-    /// Creates the `users` and `notes` tables if they do not exist.
-    fn initialize_tables(&self) -> Result<()> {
-        let conn = self.conn.blocking_lock();
+    /// Synchronous helper to create tables – called only during `new()` on the main thread.
+    fn initialize_tables_sync(&self) -> SqliteResult<()> {
+        let conn = self.conn.lock().unwrap();
 
         conn.execute_batch(
             "
@@ -56,121 +57,161 @@ impl Database {
     }
 
     // -----------------------------------------------------------------------
-    // User methods
+    // User methods (async, offloaded to blocking threads)
     // -----------------------------------------------------------------------
 
     /// Creates a new user with the given username and password hash.
     /// Returns the new user's ID.
-    pub fn create_user(&self, username: &str, password_hash: &str) -> Result<i64> {
-        let conn = self.conn.blocking_lock();
-        conn.execute(
-            "INSERT INTO users (username, password_hash) VALUES (?1, ?2)",
-            params![username, password_hash],
-        )?;
-        Ok(conn.last_insert_rowid())
+    pub async fn create_user(&self, username: String, password_hash: String) -> SqliteResult<i64> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
+            conn.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?1, ?2)",
+                params![username, password_hash],
+            )?;
+            Ok(conn.last_insert_rowid())
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     /// Looks up a user by username and verifies the password against the stored hash.
     /// Returns `Some((user_id, password_hash))` if credentials are valid, `None` otherwise.
-    pub fn verify_user(&self, username: &str, password: &str) -> Result<Option<(i64, String)>> {
-        let conn = self.conn.blocking_lock();
+    pub async fn verify_user(
+        &self,
+        username: String,
+        password: String,
+    ) -> SqliteResult<Option<(i64, String)>> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
 
-        let mut stmt = conn.prepare(
-            "SELECT id, password_hash FROM users WHERE username = ?1",
-        )?;
+            let mut stmt = conn.prepare(
+                "SELECT id, password_hash FROM users WHERE username = ?1",
+            )?;
 
-        let result = stmt.query_row(params![username], |row| {
-            let user_id: i64 = row.get(0)?;
-            let password_hash: String = row.get(1)?;
-            Ok((user_id, password_hash))
-        });
+            let result = stmt.query_row(params![username], |row| {
+                let user_id: i64 = row.get(0)?;
+                let password_hash: String = row.get(1)?;
+                Ok((user_id, password_hash))
+            });
 
-        match result {
-            Ok((user_id, password_hash)) => {
-                // Verify the password using bcrypt
-                let valid = bcrypt::verify(password, &password_hash).unwrap_or(false);
-                if valid {
-                    Ok(Some((user_id, password_hash)))
-                } else {
-                    Ok(None)
+            match result {
+                Ok((user_id, password_hash)) => {
+                    // Verify the password using bcrypt
+                    let valid = bcrypt::verify(&password, &password_hash).unwrap_or(false);
+                    if valid {
+                        Ok(Some((user_id, password_hash)))
+                    } else {
+                        Ok(None)
+                    }
                 }
+                Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+                Err(e) => Err(e),
             }
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(e),
-        }
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     /// Checks if a username is already taken.
-    pub fn username_exists(&self, username: &str) -> Result<bool> {
-        let conn = self.conn.blocking_lock();
-        let mut stmt = conn.prepare("SELECT COUNT(*) FROM users WHERE username = ?1")?;
-        let count: i64 = stmt.query_row(params![username], |row| row.get(0))?;
-        Ok(count > 0)
+    pub async fn username_exists(&self, username: String) -> SqliteResult<bool> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
+            let mut stmt =
+                conn.prepare("SELECT COUNT(*) FROM users WHERE username = ?1")?;
+            let count: i64 = stmt.query_row(params![username], |row| row.get(0))?;
+            Ok(count > 0)
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     // -----------------------------------------------------------------------
-    // Notes methods
+    // Notes methods (async, offloaded to blocking threads)
     // -----------------------------------------------------------------------
 
     /// Returns all notes belonging to the given user.
-    pub fn list_notes(&self, user_id: i64) -> Result<Vec<NoteResponse>> {
-        let conn = self.conn.blocking_lock();
+    pub async fn list_notes(&self, user_id: i64) -> SqliteResult<Vec<NoteResponse>> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
 
-        let mut stmt = conn.prepare(
-            "SELECT id, user_id, title, content, updated_at FROM notes WHERE user_id = ?1 ORDER BY updated_at DESC",
-        )?;
+            let mut stmt = conn.prepare(
+                "SELECT id, user_id, title, content, updated_at FROM notes WHERE user_id = ?1 ORDER BY updated_at DESC",
+            )?;
 
-        let notes = stmt
-            .query_map(params![user_id], |row| {
-                Ok(NoteResponse {
-                    id: row.get(0)?,
-                    user_id: row.get(1)?,
-                    title: row.get(2)?,
-                    content: row.get(3)?,
-                    updated_at: row.get(4)?,
-                })
-            })?
-            .collect::<Result<Vec<_>>>()?;
+            let notes = stmt
+                .query_map(params![user_id], |row| {
+                    Ok(NoteResponse {
+                        id: row.get(0)?,
+                        user_id: row.get(1)?,
+                        title: row.get(2)?,
+                        content: row.get(3)?,
+                        updated_at: row.get(4)?,
+                    })
+                })?
+                .collect::<SqliteResult<Vec<_>>>()?;
 
-        Ok(notes)
+            Ok(notes)
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     /// Creates a new note for the given user.
     /// Returns the new note's ID.
-    pub fn create_note(&self, user_id: i64, title: &str, content: &str) -> Result<i64> {
-        let conn = self.conn.blocking_lock();
-
-        conn.execute(
-            "INSERT INTO notes (user_id, title, content) VALUES (?1, ?2, ?3)",
-            params![user_id, title, content],
-        )?;
-
-        Ok(conn.last_insert_rowid())
+    pub async fn create_note(&self, user_id: i64, title: String, content: String) -> SqliteResult<i64> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
+            conn.execute(
+                "INSERT INTO notes (user_id, title, content) VALUES (?1, ?2, ?3)",
+                params![user_id, title, content],
+            )?;
+            Ok(conn.last_insert_rowid())
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     /// Updates an existing note. Only succeeds if the note belongs to `user_id`.
     /// Returns `true` if a row was updated, `false` otherwise.
-    pub fn update_note(&self, note_id: i64, user_id: i64, title: &str, content: &str) -> Result<bool> {
-        let conn = self.conn.blocking_lock();
-
-        let rows = conn.execute(
-            "UPDATE notes SET title = ?1, content = ?2, updated_at = datetime('now') WHERE id = ?3 AND user_id = ?4",
-            params![title, content, note_id, user_id],
-        )?;
-
-        Ok(rows > 0)
+    pub async fn update_note(
+        &self,
+        note_id: i64,
+        user_id: i64,
+        title: String,
+        content: String,
+    ) -> SqliteResult<bool> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
+            let rows = conn.execute(
+                "UPDATE notes SET title = ?1, content = ?2, updated_at = datetime('now') WHERE id = ?3 AND user_id = ?4",
+                params![title, content, note_id, user_id],
+            )?;
+            Ok(rows > 0)
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 
     /// Deletes a note. Only succeeds if the note belongs to `user_id`.
     /// Returns `true` if a row was deleted, `false` otherwise.
-    pub fn delete_note(&self, note_id: i64, user_id: i64) -> Result<bool> {
-        let conn = self.conn.blocking_lock();
-
-        let rows = conn.execute(
-            "DELETE FROM notes WHERE id = ?1 AND user_id = ?2",
-            params![note_id, user_id],
-        )?;
-
-        Ok(rows > 0)
+    pub async fn delete_note(&self, note_id: i64, user_id: i64) -> SqliteResult<bool> {
+        let conn = Arc::clone(&self.conn);
+        tokio::task::spawn_blocking(move || {
+            let conn = conn.lock().unwrap();
+            let rows = conn.execute(
+                "DELETE FROM notes WHERE id = ?1 AND user_id = ?2",
+                params![note_id, user_id],
+            )?;
+            Ok(rows > 0)
+        })
+        .await
+        .expect("Blocking task panicked")
     }
 }
