@@ -12,6 +12,7 @@ const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const noteForm = document.getElementById('note-form');
 const logoutBtn = document.getElementById('logout-btn');
+const themeToggle = document.getElementById('theme-toggle');
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 const loginCard = document.querySelector('.login-card');
@@ -337,6 +338,32 @@ function formatDate(dateStr) {
         return dateStr;
     }
 }
+
+// ─── Theme Switcher ──────────────────────────────────────────────────────
+
+const THEME_STORAGE_KEY = 'scriptorium-theme';
+
+function getSavedTheme() {
+    return localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme === 'frutiger-aero' ? 'frutiger-aero' : '');
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    // Update toggle icon
+    themeToggle.textContent = theme === 'frutiger-aero' ? '🌙' : '💧';
+    themeToggle.title = theme === 'frutiger-aero' ? 'Dark Mode aktivieren' : 'Frutiger Aero aktivieren';
+}
+
+// Initialize theme from localStorage on page load
+setTheme(getSavedTheme());
+
+// Theme toggle event listener
+themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') ? 'frutiger-aero' : 'dark';
+    const newTheme = currentTheme === 'frutiger-aero' ? 'dark' : 'frutiger-aero';
+    setTheme(newTheme);
+});
 
 // ─── Initialisation ──────────────────────────────────────────────────────
 
