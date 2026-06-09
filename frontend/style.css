@@ -1,0 +1,382 @@
+/* ========================================================================
+   Scriptorium Cloud – Design System
+   ========================================================================
+   Alle zentralen Design-Werte sind als CSS-Variablen im :root-Block
+   definiert. Um das Theme anzupassen, musst du nur die Werte hier ändern.
+   ======================================================================== */
+
+:root {
+    /* ─── Farben ─────────────────────────────────────────────── */
+    --bg-color: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-card: #1e2a4a;
+    --bg-input: #0f1a30;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0b0;
+    --text-muted: #6b7a8f;
+    --accent-color: #0f3460;
+    --accent-hover: #1a4a7a;
+    --primary-color: #e94560;
+    --primary-hover: #ff6b81;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --error-color: #e74c3c;
+    --border-color: #2a3a5a;
+
+    /* ─── Typografie ──────────────────────────────────────────── */
+    --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+
+    /* ─── Abstände & Radien ──────────────────────────────────── */
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-full: 9999px;
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* ─── Schatten & Übergänge ────────────────────────────────── */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+    --transition: 0.2s ease;
+}
+
+/* ========================================================================
+   Global Reset & Base Styles
+   ======================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* ========================================================================
+   Views
+   ======================================================================== */
+
+.view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--spacing-md);
+}
+
+/* ========================================================================
+   Login & Register Cards
+   ======================================================================== */
+
+.login-card,
+.register-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.logo {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+}
+
+.login-card h1,
+.register-card h1 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* ─── Form Elements ────────────────────────────────────── */
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ─── Buttons ──────────────────────────────────────────── */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: background-color var(--transition), transform var(--transition);
+    width: 100%;
+    font-weight: 600;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    width: auto;
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-danger {
+    background-color: transparent;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+    width: auto;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.btn-danger:hover {
+    background-color: var(--error-color);
+    color: #fff;
+}
+
+/* ─── Error Messages ────────────────────────────────────── */
+
+.error-message {
+    color: var(--error-color);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-sm);
+    min-height: 1.2em;
+}
+
+/* ─── Hints ──────────────────────────────────────────────── */
+
+.register-hint {
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* ========================================================================
+   Notes View
+   ======================================================================== */
+
+.notes-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.notes-header h1 {
+    font-size: var(--font-size-lg);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-badge {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-card);
+    border-radius: var(--border-radius-full);
+}
+
+.notes-container {
+    max-width: 800px;
+    margin: 80px auto 0;
+    padding: var(--spacing-xl);
+    width: 100%;
+}
+
+/* ─── New Note Card ──────────────────────────────────────── */
+
+.new-note-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow);
+}
+
+.new-note-card h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color);
+}
+
+/* ─── Notes List Section ──────────────────────────────────── */
+
+.notes-list h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: var(--spacing-2xl);
+}
+
+/* ─── Individual Note Card ────────────────────────────────── */
+
+.note-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition);
+}
+
+.note-card:hover {
+    box-shadow: var(--shadow);
+}
+
+.note-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.note-card-title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-color);
+    word-break: break-word;
+    flex: 1;
+    margin-right: var(--spacing-sm);
+}
+
+.note-card-date {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.note-card-content {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    word-break: break-word;
+    margin-bottom: var(--spacing-sm);
+    white-space: pre-wrap;
+}
+
+.note-card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+}
+
+/* ========================================================================
+   Responsive
+   ======================================================================== */
+
+@media (max-width: 600px) {
+    .login-card,
+    .register-card {
+        padding: var(--spacing-lg);
+    }
+
+    .notes-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .notes-header h1 {
+        font-size: var(--font-size-base);
+    }
+
+    .notes-container {
+        padding: var(--spacing-md);
+        margin-top: 70px;
+    }
+}

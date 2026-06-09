@@ -15,6 +15,7 @@ use axum::{
 use auth::AuthUser;
 use db::Database;
 use models::{CreateNoteResponse, NoteRequest, NotesListResponse, RegisterRequest};
+use tower_http::services::ServeDir;
 
 /// Application state shared across all handlers via Axum's extractor system.
 #[derive(Clone)]
@@ -46,19 +47,30 @@ async fn main() {
         db: Arc::new(database),
     };
 
-    // Build the Axum router with routes
-    let app = Router::new()
-        // Health check (public)
-        .route("/health", get(health_check))
+    // Build the API router (requires shared state)
+    let api_routes = Router::new()
         // Registration (public)
-        .route("/api/register", post(register_handler))
+        .route("/register", post(register_handler))
         // Notes CRUD (authenticated)
-        .route("/api/notes", get(list_notes_handler))
-        .route("/api/notes", post(create_note_handler))
-        .route("/api/notes/:id", put(update_note_handler))
-        .route("/api/notes/:id", delete(delete_note_handler))
+        .route("/notes", get(list_notes_handler))
+        .route("/notes", post(create_note_handler))
+        .route("/notes/:id", put(update_note_handler))
+        .route("/notes/:id", delete(delete_note_handler))
         // Attach shared state
         .with_state(state);
+
+    // Serve static frontend files from the frontend directory
+    let frontend_service = ServeDir::new("frontend")
+        .append_index_html_on_directories(true);
+
+    // Build the main router:
+    //   - Health check lives at the top level
+    //   - All `/api/*` paths are handled by the stateful API router
+    //   - Everything else (including `/`) is served as a static file
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .nest("/api", api_routes)
+        .fallback_service(frontend_service);
 
     // Bind to 0.0.0.0:3000
     let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 3000));

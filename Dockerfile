@@ -39,6 +39,9 @@ RUN mkdir -p /app/data
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/target/release/scriptorium-cloud /app/scriptorium-cloud
 
+# Copy static frontend files
+COPY frontend/ ./frontend/
+
 # Set the default database path to the data directory
 ENV DATABASE_PATH=/app/data/scriptorium.db
 

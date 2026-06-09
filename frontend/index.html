@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scriptorium Cloud</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ========== LOGIN VIEW ========== -->
+    <div id="login-view" class="view">
+        <div class="login-card">
+            <div class="logo">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+            </div>
+            <h1>Scriptorium Cloud</h1>
+            <p class="subtitle">Melde dich an, um deine Notizen zu verwalten</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Benutzername</label>
+                    <input type="text" id="username" name="username" placeholder="Benutzername" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Passwort</label>
+                    <input type="password" id="password" name="password" placeholder="Passwort" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Anmelden</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+            <p class="register-hint">Noch kein Konto? <a href="#" id="show-register">Registrieren</a></p>
+        </div>
+
+        <div class="register-card" style="display:none;">
+            <div class="logo">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+            </div>
+            <h1>Registrieren</h1>
+            <p class="subtitle">Erstelle ein neues Konto</p>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">Benutzername</label>
+                    <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Passwort</label>
+                    <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrieren</button>
+                <p id="register-error" class="error-message"></p>
+            </form>
+            <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
+        </div>
+    </div>
+
+    <!-- ========== NOTES VIEW ========== -->
+    <div id="notes-view" class="view" style="display:none;">
+        <header class="notes-header">
+            <h1>Meine Notizen</h1>
+            <div class="header-actions">
+                <span id="user-display" class="user-badge"></span>
+                <button id="logout-btn" class="btn btn-secondary">Abmelden</button>
+            </div>
+        </header>
+
+        <main class="notes-container">
+            <!-- New note form -->
+            <section class="new-note-card">
+                <h2>Neue Notiz</h2>
+                <form id="note-form">
+                    <div class="form-group">
+                        <input type="text" id="note-title" placeholder="Titel" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="note-content" placeholder="Inhalt schreiben..." rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Notiz speichern</button>
+                </form>
+            </section>
+
+            <!-- Notes list -->
+            <section class="notes-list">
+                <h2>Vorhandene Notizen</h2>
+                <div id="notes-error" class="error-message"></div>
+                <div id="notes-container">
+                    <p class="empty-state">Lade Notizen…</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
