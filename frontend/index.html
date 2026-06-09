@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Global Theme Toggle (always visible, fixed top-right) -->
+    <button id="theme-toggle" class="theme-toggle-global" title="Theme wechseln">💧</button>
+
     <!-- ========== LOGIN VIEW ========== -->
     <div id="login-view" class="view">
         <div class="login-card">
@@ -66,7 +69,7 @@
             <h1>Meine Notizen</h1>
             <div class="header-actions">
                 <span id="user-display" class="user-badge"></span>
-                <button id="theme-toggle" class="btn btn-icon" title="Theme wechseln">🌙</button>
+                <!-- Theme toggle is now global, positioned outside the notes header -->
                 <button id="logout-btn" class="btn btn-secondary">Abmelden</button>
             </div>
         </header>

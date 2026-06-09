@@ -484,6 +484,32 @@ a:hover {
 }
 
 /* ========================================================================
+   Global Theme Toggle
+   Always visible, fixed to top-right of the viewport
+   ======================================================================== */
+
+.theme-toggle-global {
+    position: fixed;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10000;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    line-height: 1;
+    border-radius: var(--border-radius);
+    transition: transform 0.2s ease, filter 0.2s ease, background-color 0.3s ease;
+    filter: grayscale(0.3);
+}
+
+.theme-toggle-global:hover {
+    transform: scale(1.15);
+    filter: grayscale(0);
+}
+
+/* ========================================================================
    Responsive
    ======================================================================== */
 
