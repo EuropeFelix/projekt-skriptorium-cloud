@@ -46,11 +46,18 @@ impl Database {
                 user_id     INTEGER NOT NULL,
                 title       TEXT NOT NULL,
                 content     TEXT NOT NULL,
+                category    TEXT NOT NULL DEFAULT 'Allgemein',
                 updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY (user_id) REFERENCES users(id)
             );
             ",
         )?;
+
+        // Add category column for databases created before the category feature
+        // If the column already exists, the error is silently ignored
+        let _ = conn.execute_batch(
+            "ALTER TABLE notes ADD COLUMN category TEXT NOT NULL DEFAULT 'Allgemein';"
+        );
 
         tracing::info!("Database tables initialized");
         Ok(())
@@ -140,7 +147,7 @@ impl Database {
             let conn = conn.lock().unwrap();
 
             let mut stmt = conn.prepare(
-                "SELECT id, user_id, title, content, updated_at FROM notes WHERE user_id = ?1 ORDER BY updated_at DESC",
+                "SELECT id, user_id, title, content, category, updated_at FROM notes WHERE user_id = ?1 ORDER BY updated_at DESC",
             )?;
 
             let notes = stmt
@@ -150,7 +157,8 @@ impl Database {
                         user_id: row.get(1)?,
                         title: row.get(2)?,
                         content: row.get(3)?,
-                        updated_at: row.get(4)?,
+                        category: row.get(4)?,
+                        updated_at: row.get(5)?,
                     })
                 })?
                 .collect::<SqliteResult<Vec<_>>>()?;
@@ -163,13 +171,13 @@ impl Database {
 
     /// Creates a new note for the given user.
     /// Returns the new note's ID.
-    pub async fn create_note(&self, user_id: i64, title: String, content: String) -> SqliteResult<i64> {
+    pub async fn create_note(&self, user_id: i64, title: String, content: String, category: String) -> SqliteResult<i64> {
         let conn = Arc::clone(&self.conn);
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
             conn.execute(
-                "INSERT INTO notes (user_id, title, content) VALUES (?1, ?2, ?3)",
-                params![user_id, title, content],
+                "INSERT INTO notes (user_id, title, content, category) VALUES (?1, ?2, ?3, ?4)",
+                params![user_id, title, content, category],
             )?;
             Ok(conn.last_insert_rowid())
         })
@@ -185,13 +193,14 @@ impl Database {
         user_id: i64,
         title: String,
         content: String,
+        category: String,
     ) -> SqliteResult<bool> {
         let conn = Arc::clone(&self.conn);
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
             let rows = conn.execute(
-                "UPDATE notes SET title = ?1, content = ?2, updated_at = datetime('now') WHERE id = ?3 AND user_id = ?4",
-                params![title, content, note_id, user_id],
+                "UPDATE notes SET title = ?1, content = ?2, category = ?3, updated_at = datetime('now') WHERE id = ?4 AND user_id = ?5",
+                params![title, content, category, note_id, user_id],
             )?;
             Ok(rows > 0)
         })

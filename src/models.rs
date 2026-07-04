@@ -12,6 +12,12 @@ pub struct RegisterRequest {
 pub struct NoteRequest {
     pub title: String,
     pub content: String,
+    #[serde(default = "default_category")]
+    pub category: String,
+}
+
+fn default_category() -> String {
+    "Allgemein".to_string()
 }
 
 /// Response body for a single note.
@@ -21,6 +27,7 @@ pub struct NoteResponse {
     pub user_id: i64,
     pub title: String,
     pub content: String,
+    pub category: String,
     pub updated_at: String,
 }
 

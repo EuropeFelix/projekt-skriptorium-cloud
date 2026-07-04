@@ -111,7 +111,8 @@
 }
 
 [data-theme="frutiger-aero"] .form-group input,
-[data-theme="frutiger-aero"] .form-group textarea {
+[data-theme="frutiger-aero"] .form-group textarea,
+[data-theme="frutiger-aero"] .form-group select {
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.9);
     color: var(--text-color);
@@ -246,7 +247,8 @@ a:hover {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--bg-input);
@@ -260,7 +262,8 @@ a:hover {
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
 }
@@ -460,6 +463,25 @@ a:hover {
     word-break: break-word;
     flex: 1;
     margin-right: var(--spacing-sm);
+}
+
+.note-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+.note-category-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--border-radius-full);
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    white-space: nowrap;
+    line-height: 1.4;
 }
 
 .note-card-date {

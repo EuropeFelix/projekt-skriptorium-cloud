@@ -24,6 +24,7 @@ const notesContainer = document.getElementById('notes-container');
 const userDisplay = document.getElementById('user-display');
 const editNoteId = document.getElementById('edit-note-id');
 const noteSubmitBtn = document.getElementById('note-submit-btn');
+const noteCategory = document.getElementById('note-category');
 
 // ─── Auth Helpers ────────────────────────────────────────────────────────
 
@@ -244,7 +245,10 @@ function renderNotes(notes) {
         <div class="note-card" data-id="${note.id}">
             <div class="note-card-header">
                 <span class="note-card-title">${escapeHtml(note.title)}</span>
-                <span class="note-card-date">${formatDate(note.updated_at)}</span>
+                <span class="note-card-meta">
+                    <span class="note-category-badge">${escapeHtml(note.category)}</span>
+                    <span class="note-card-date">${formatDate(note.updated_at)}</span>
+                </span>
             </div>
             <div class="note-card-content">${escapeHtml(note.content)}</div>
             <div class="note-card-actions">
@@ -275,6 +279,7 @@ async function editNote(id, notes) {
     // Fill the form with the note data
     document.getElementById('note-title').value = note.title;
     document.getElementById('note-content').value = note.content;
+    noteCategory.value = note.category;
     editNoteId.value = id;
     noteSubmitBtn.textContent = '✏️ Änderungen speichern';
 
@@ -292,6 +297,7 @@ noteForm.addEventListener('submit', async (e) => {
 
     const title = document.getElementById('note-title').value.trim();
     const content = document.getElementById('note-content').value.trim();
+    const category = noteCategory.value;
     const editingId = editNoteId.value;
 
     if (!title) {
@@ -306,7 +312,7 @@ noteForm.addEventListener('submit', async (e) => {
             // Update existing note
             response = await apiRequest(`/notes/${editingId}`, {
                 method: 'PUT',
-                body: JSON.stringify({ title, content }),
+                body: JSON.stringify({ title, content, category }),
             });
 
             if (!response.ok) {
@@ -318,7 +324,7 @@ noteForm.addEventListener('submit', async (e) => {
             // Create new note
             response = await apiRequest('/notes', {
                 method: 'POST',
-                body: JSON.stringify({ title, content }),
+                body: JSON.stringify({ title, content, category }),
             });
 
             if (!response.ok) {
@@ -345,6 +351,7 @@ noteForm.addEventListener('submit', async (e) => {
 function resetNoteForm() {
     document.getElementById('note-title').value = '';
     document.getElementById('note-content').value = '';
+    noteCategory.value = 'Allgemein';
     editNoteId.value = '';
     noteSubmitBtn.textContent = 'Notiz speichern';
     notesError.textContent = '';

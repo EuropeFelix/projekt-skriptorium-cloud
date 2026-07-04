@@ -185,7 +185,7 @@ async fn create_note_handler(
     }
 
     let note_id = db
-        .create_note(auth_user.user_id, req.title.clone(), req.content.clone())
+        .create_note(auth_user.user_id, req.title.clone(), req.content.clone(), req.category.clone())
         .await
         .map_err(|_| {
             (
@@ -221,7 +221,7 @@ async fn update_note_handler(
     }
 
     let updated = db
-        .update_note(note_id, auth_user.user_id, req.title.clone(), req.content.clone())
+        .update_note(note_id, auth_user.user_id, req.title.clone(), req.content.clone(), req.category.clone())
         .await
         .map_err(|_| {
             (
