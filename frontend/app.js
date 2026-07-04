@@ -241,22 +241,46 @@ function renderNotes(notes) {
         return;
     }
 
-    notesContainer.innerHTML = notes.map(note => `
-        <div class="note-card" data-id="${note.id}">
-            <div class="note-card-header">
-                <span class="note-card-title">${escapeHtml(note.title)}</span>
-                <span class="note-card-meta">
-                    <span class="note-category-badge">${escapeHtml(note.category)}</span>
-                    <span class="note-card-date">${formatDate(note.updated_at)}</span>
-                </span>
+    // Extract unique categories dynamically
+    const categories = [...new Set(notes.map(note => note.category))].sort((a, b) => {
+        // "Allgemein" always first
+        if (a === 'Allgemein') return -1;
+        if (b === 'Allgemein') return 1;
+        return a.localeCompare(b);
+    });
+
+    // Build grouped HTML
+    let html = '';
+    for (const category of categories) {
+        const categoryNotes = notes.filter(note => note.category === category);
+        html += `
+            <div class="category-section">
+                <h3 class="category-heading">
+                    <span class="category-heading-icon">📁</span>
+                    ${escapeHtml(category)}
+                    <span class="category-count">${categoryNotes.length}</span>
+                </h3>
+        `;
+        html += categoryNotes.map(note => `
+            <div class="note-card" data-id="${note.id}">
+                <div class="note-card-header">
+                    <span class="note-card-title">${escapeHtml(note.title)}</span>
+                    <span class="note-card-meta">
+                        <span class="note-category-badge">${escapeHtml(note.category)}</span>
+                        <span class="note-card-date">${formatDate(note.updated_at)}</span>
+                    </span>
+                </div>
+                <div class="note-card-content">${escapeHtml(note.content)}</div>
+                <div class="note-card-actions">
+                    <button class="btn btn-secondary edit-btn" data-id="${note.id}">✏️ Bearbeiten</button>
+                    <button class="btn btn-danger delete-btn" data-id="${note.id}">Löschen</button>
+                </div>
             </div>
-            <div class="note-card-content">${escapeHtml(note.content)}</div>
-            <div class="note-card-actions">
-                <button class="btn btn-secondary edit-btn" data-id="${note.id}">✏️ Bearbeiten</button>
-                <button class="btn btn-danger delete-btn" data-id="${note.id}">Löschen</button>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+        html += '</div>';
+    }
+
+    notesContainer.innerHTML = html;
 
     // Attach delete handlers
     document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -297,7 +321,7 @@ noteForm.addEventListener('submit', async (e) => {
 
     const title = document.getElementById('note-title').value.trim();
     const content = document.getElementById('note-content').value.trim();
-    const category = noteCategory.value;
+    const category = noteCategory.value.trim() || 'Allgemein';
     const editingId = editNoteId.value;
 
     if (!title) {
@@ -351,7 +375,7 @@ noteForm.addEventListener('submit', async (e) => {
 function resetNoteForm() {
     document.getElementById('note-title').value = '';
     document.getElementById('note-content').value = '';
-    noteCategory.value = 'Allgemein';
+    noteCategory.value = '';
     editNoteId.value = '';
     noteSubmitBtn.textContent = 'Notiz speichern';
     notesError.textContent = '';

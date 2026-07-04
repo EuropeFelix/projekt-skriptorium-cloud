@@ -428,6 +428,44 @@ a:hover {
     color: var(--text-color);
 }
 
+/* ─── Category Sections ────────────────────────────────────── */
+
+.category-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.category-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.category-heading-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.category-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: var(--border-radius-full);
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    margin-left: auto;
+}
+
 .empty-state {
     text-align: center;
     color: var(--text-muted);
