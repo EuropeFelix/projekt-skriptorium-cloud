@@ -22,6 +22,8 @@ const registerError = document.getElementById('register-error');
 const notesError = document.getElementById('notes-error');
 const notesContainer = document.getElementById('notes-container');
 const userDisplay = document.getElementById('user-display');
+const editNoteId = document.getElementById('edit-note-id');
+const noteSubmitBtn = document.getElementById('note-submit-btn');
 
 // ─── Auth Helpers ────────────────────────────────────────────────────────
 
@@ -246,6 +248,7 @@ function renderNotes(notes) {
             </div>
             <div class="note-card-content">${escapeHtml(note.content)}</div>
             <div class="note-card-actions">
+                <button class="btn btn-secondary edit-btn" data-id="${note.id}">✏️ Bearbeiten</button>
                 <button class="btn btn-danger delete-btn" data-id="${note.id}">Löschen</button>
             </div>
         </div>
@@ -255,15 +258,41 @@ function renderNotes(notes) {
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteNote(parseInt(btn.dataset.id)));
     });
+
+    // Attach edit handlers
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editNote(parseInt(btn.dataset.id), notes));
+    });
 }
 
-// ─── Create Note ─────────────────────────────────────────────────────────
+// ─── Edit Note ───────────────────────────────────────────────────────────
+
+async function editNote(id, notes) {
+    // Find the note in the list
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    // Fill the form with the note data
+    document.getElementById('note-title').value = note.title;
+    document.getElementById('note-content').value = note.content;
+    editNoteId.value = id;
+    noteSubmitBtn.textContent = '✏️ Änderungen speichern';
+
+    // Scroll smoothly to the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Focus on the title input
+    document.getElementById('note-title').focus();
+}
+
+// ─── Save / Update Note ──────────────────────────────────────────────────
 
 noteForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const title = document.getElementById('note-title').value.trim();
     const content = document.getElementById('note-content').value.trim();
+    const editingId = editNoteId.value;
 
     if (!title) {
         notesError.textContent = 'Titel ist erforderlich.';
@@ -271,27 +300,55 @@ noteForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await apiRequest('/notes', {
-            method: 'POST',
-            body: JSON.stringify({ title, content }),
-        });
+        let response;
 
-        if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            notesError.textContent = data.error || 'Fehler beim Erstellen der Notiz.';
-            return;
+        if (editingId) {
+            // Update existing note
+            response = await apiRequest(`/notes/${editingId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ title, content }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                notesError.textContent = data.error || 'Fehler beim Aktualisieren der Notiz.';
+                return;
+            }
+        } else {
+            // Create new note
+            response = await apiRequest('/notes', {
+                method: 'POST',
+                body: JSON.stringify({ title, content }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                notesError.textContent = data.error || 'Fehler beim Erstellen der Notiz.';
+                return;
+            }
         }
 
-        // Clear form and reload notes
-        document.getElementById('note-title').value = '';
-        document.getElementById('note-content').value = '';
+        // Reset form
+        resetNoteForm();
+
+        // Reload notes
         notesError.textContent = '';
         await loadNotes();
     } catch (err) {
         if (err.message === 'Unauthorized') return;
-        notesError.textContent = 'Fehler beim Erstellen der Notiz.';
+        notesError.textContent = editingId ? 'Fehler beim Aktualisieren der Notiz.' : 'Fehler beim Erstellen der Notiz.';
     }
 });
+
+// ─── Reset Note Form ─────────────────────────────────────────────────────
+
+function resetNoteForm() {
+    document.getElementById('note-title').value = '';
+    document.getElementById('note-content').value = '';
+    editNoteId.value = '';
+    noteSubmitBtn.textContent = 'Notiz speichern';
+    notesError.textContent = '';
+}
 
 // ─── Delete Note ─────────────────────────────────────────────────────────
 

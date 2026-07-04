@@ -79,13 +79,14 @@
             <section class="new-note-card">
                 <h2>Neue Notiz</h2>
                 <form id="note-form">
+                    <input type="hidden" id="edit-note-id">
                     <div class="form-group">
                         <input type="text" id="note-title" placeholder="Titel" required>
                     </div>
                     <div class="form-group">
                         <textarea id="note-content" placeholder="Inhalt schreiben..." rows="4"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Notiz speichern</button>
+                    <button type="submit" class="btn btn-primary" id="note-submit-btn">Notiz speichern</button>
                 </form>
             </section>
 
