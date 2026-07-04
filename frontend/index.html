@@ -78,20 +78,21 @@
             <!-- New note form -->
             <section class="new-note-card">
                 <h2>Neue Notiz</h2>
-                <form id="note-form">
-                    <input type="hidden" id="edit-note-id">
-                    <div class="form-group">
-                        <input type="text" id="note-title" placeholder="Titel" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="note-content" placeholder="Inhalt schreiben..." rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="note-category">Kategorie</label>
-                        <input type="text" id="note-category" placeholder="Kategorie (z.B. Informatik, Privat)">
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="note-submit-btn">Notiz speichern</button>
-                </form>
+                    <form id="note-form">
+                        <input type="hidden" id="edit-note-id">
+                        <div class="form-group">
+                            <label for="note-category">Kategorie/Oberordner</label>
+                            <input type="text" id="note-category" placeholder="Kategorie/Oberordner">
+                        </div>
+                        <div class="form-group">
+                            <label for="note-title">Dateiname</label>
+                            <input type="text" id="note-title" placeholder="Dateiname" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="note-content" placeholder="Markdown Text" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="note-submit-btn">Notiz speichern</button>
+                    </form>
             </section>
 
             <!-- Notes list -->
