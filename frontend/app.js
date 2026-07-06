@@ -119,97 +119,101 @@ function showRegisterCard() {
     setTimeout(initRegisterBgSlider, 50);
 }
 
-// ─── Login ───────────────────────────────────────────────────────────────
+// ─── Event Listeners (with null guards) ─────────────────────────────────
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    loginError.textContent = '';
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
 
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
 
-    if (!username || !password) {
-        loginError.textContent = 'Bitte Benutzername und Passwort eingeben.';
-        return;
-    }
+        if (!username || !password) {
+            loginError.textContent = 'Bitte Benutzername und Passwort eingeben.';
+            return;
+        }
 
-    // Store credentials temporarily to test
-    setCredentials(username, password);
+        // Store credentials temporarily to test
+        setCredentials(username, password);
 
-    try {
-        // Test credentials by fetching notes
-        const response = await apiRequest('/notes');
-        if (response.ok) {
-            showNotesView();
-        } else {
+        try {
+            // Test credentials by fetching notes
+            const response = await apiRequest('/notes');
+            if (response.ok) {
+                showNotesView();
+            } else {
+                clearCredentials();
+                loginError.textContent = 'Ungültiger Benutzername oder Passwort.';
+            }
+        } catch (err) {
             clearCredentials();
-            loginError.textContent = 'Ungültiger Benutzername oder Passwort.';
+            loginError.textContent = 'Verbindungsfehler zum Server.';
         }
-    } catch (err) {
+    });
+}
+
+if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        registerError.textContent = '';
+
+        const username = document.getElementById('reg-username').value.trim();
+        const password = document.getElementById('reg-password').value;
+
+        if (!username || !password) {
+            registerError.textContent = 'Bitte Benutzername und Passwort eingeben.';
+            return;
+        }
+
+        if (password.length < 4) {
+            registerError.textContent = 'Passwort muss mindestens 4 Zeichen lang sein.';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Auto-login after registration
+                setCredentials(username, password);
+                showNotesView();
+            } else {
+                registerError.textContent = data.error || 'Registrierung fehlgeschlagen.';
+            }
+        } catch (err) {
+            registerError.textContent = 'Verbindungsfehler zum Server.';
+        }
+    });
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
         clearCredentials();
-        loginError.textContent = 'Verbindungsfehler zum Server.';
-    }
-});
+        showLoginView();
+        showLoginCard();
+    });
+}
 
-// ─── Register ────────────────────────────────────────────────────────────
+if (showRegisterLink) {
+    showRegisterLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showRegisterCard();
+    });
+}
 
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    registerError.textContent = '';
-
-    const username = document.getElementById('reg-username').value.trim();
-    const password = document.getElementById('reg-password').value;
-
-    if (!username || !password) {
-        registerError.textContent = 'Bitte Benutzername und Passwort eingeben.';
-        return;
-    }
-
-    if (password.length < 4) {
-        registerError.textContent = 'Passwort muss mindestens 4 Zeichen lang sein.';
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Auto-login after registration
-            setCredentials(username, password);
-            showNotesView();
-        } else {
-            registerError.textContent = data.error || 'Registrierung fehlgeschlagen.';
-        }
-    } catch (err) {
-        registerError.textContent = 'Verbindungsfehler zum Server.';
-    }
-});
-
-// ─── Logout ──────────────────────────────────────────────────────────────
-
-logoutBtn.addEventListener('click', () => {
-    clearCredentials();
-    showLoginView();
-    showLoginCard();
-});
-
-// ─── UI Navigation: Login <-> Register ──────────────────────────────────
-
-showRegisterLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showRegisterCard();
-});
-
-showLoginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showLoginCard();
-});
+if (showLoginLink) {
+    showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showLoginCard();
+    });
+}
 
 // ─── Load Notes ──────────────────────────────────────────────────────────
 
@@ -315,62 +319,6 @@ async function editNote(id, notes) {
     // Focus on the title input
     document.getElementById('note-title').focus();
 }
-
-// ─── Save / Update Note ──────────────────────────────────────────────────
-
-noteForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const title = document.getElementById('note-title').value.trim();
-    const content = document.getElementById('note-content').value.trim();
-    const category = noteCategory.value.trim() || 'Allgemein';
-    const editingId = editNoteId.value;
-
-    if (!title) {
-        notesError.textContent = 'Titel ist erforderlich.';
-        return;
-    }
-
-    try {
-        let response;
-
-        if (editingId) {
-            // Update existing note
-            response = await apiRequest(`/notes/${editingId}`, {
-                method: 'PUT',
-                body: JSON.stringify({ title, content, category }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                notesError.textContent = data.error || 'Fehler beim Aktualisieren der Notiz.';
-                return;
-            }
-        } else {
-            // Create new note
-            response = await apiRequest('/notes', {
-                method: 'POST',
-                body: JSON.stringify({ title, content, category }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                notesError.textContent = data.error || 'Fehler beim Erstellen der Notiz.';
-                return;
-            }
-        }
-
-        // Reset form
-        resetNoteForm();
-
-        // Reload notes
-        notesError.textContent = '';
-        await loadNotes();
-    } catch (err) {
-        if (err.message === 'Unauthorized') return;
-        notesError.textContent = editingId ? 'Fehler beim Aktualisieren der Notiz.' : 'Fehler beim Erstellen der Notiz.';
-    }
-});
 
 // ─── Reset Note Form ─────────────────────────────────────────────────────
 
@@ -507,11 +455,13 @@ function setTheme(theme) {
 setTheme(getSavedTheme());
 
 // Theme toggle event listener
-themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme') ? 'frutiger-aero' : 'dark';
-    const newTheme = currentTheme === 'frutiger-aero' ? 'dark' : 'frutiger-aero';
-    setTheme(newTheme);
-});
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') ? 'frutiger-aero' : 'dark';
+        const newTheme = currentTheme === 'frutiger-aero' ? 'dark' : 'frutiger-aero';
+        setTheme(newTheme);
+    });
+}
 
 // ─── Initialisation ──────────────────────────────────────────────────────
 
@@ -521,4 +471,59 @@ if (getCredentials()) {
 } else {
     showLoginView();
     showLoginCard();
+}
+
+// Safety: if noteForm exists (notes view) attach listener
+if (noteForm) {
+    noteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('note-title').value.trim();
+        const content = document.getElementById('note-content').value.trim();
+        const category = noteCategory.value.trim() || 'Allgemein';
+        const editingId = editNoteId.value;
+
+        if (!title) {
+            notesError.textContent = 'Titel ist erforderlich.';
+            return;
+        }
+
+        try {
+            let response;
+
+            if (editingId) {
+                response = await apiRequest(`/notes/${editingId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ title, content, category }),
+                });
+
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    notesError.textContent = data.error || 'Fehler beim Aktualisieren der Notiz.';
+                    return;
+                }
+            } else {
+                response = await apiRequest('/notes', {
+                    method: 'POST',
+                    body: JSON.stringify({ title, content, category }),
+                });
+
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    notesError.textContent = data.error || 'Fehler beim Erstellen der Notiz.';
+                    return;
+                }
+            }
+
+            // Reset form
+            resetNoteForm();
+
+            // Reload notes
+            notesError.textContent = '';
+            await loadNotes();
+        } catch (err) {
+            if (err.message === 'Unauthorized') return;
+            notesError.textContent = editingId ? 'Fehler beim Aktualisieren der Notiz.' : 'Fehler beim Erstellen der Notiz.';
+        }
+    });
 }
