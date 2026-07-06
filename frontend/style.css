@@ -173,12 +173,6 @@
     color: #fff;
 }
 
-[data-theme="frutiger-aero"] .register-slider {
-    background: rgba(200, 230, 255, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
 [data-theme="frutiger-aero"] .logo {
     color: var(--primary-color);
 }
@@ -250,129 +244,250 @@ a:hover {
     text-align: center;
 }
 
-/* Split register card – wider for slider + form */
-.register-card-split {
-    max-width: 820px;
-    padding: 0;
+/* ========================================================================
+   Register Overlay – Immersive Frutiger Aero + Glassmorphism
+   ======================================================================== */
+
+.register-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     overflow: hidden;
 }
 
-.register-split {
-    display: flex;
-    min-height: 420px;
+/* ─── Ebene 1: Hintergrund-Slider ───────────────────────────── */
+
+.register-bg-slider {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
 }
 
-/* ─── Slider (left column) ──────────────────────────────────── */
-
-.register-slider {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-2xl);
-    background: var(--bg-secondary);
-    position: relative;
-    min-height: 100%;
-}
-
-.slider-track {
-    position: relative;
-    width: 100%;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.slider-slide {
+.bg-slide {
     position: absolute;
     inset: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
     opacity: 0;
-    transition: opacity 0.6s ease;
+    transition: opacity 1.5s ease;
     pointer-events: none;
-    padding: var(--spacing-md);
+    padding: var(--spacing-2xl);
+    padding-left: 5%;
 }
 
-.slider-slide.active {
+.bg-slide.active {
     opacity: 1;
     pointer-events: auto;
-    position: relative;
 }
 
-.slider-icon {
-    font-size: 3rem;
+/* Lebendige Farbverläufe pro Slide */
+.bg-slide-1 {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 30%, #00d4aa 70%, #a8edea 100%);
+}
+
+.bg-slide-2 {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 30%, #4facfe 70%, #00f2fe 100%);
+}
+
+.bg-slide-3 {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 30%, #a8edea 70%, #00c6ff 100%);
+}
+
+/* Slide-Inhalt (große Texte, links zentriert) */
+.bg-slide-content {
+    max-width: 45%;
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+}
+
+.bg-slide-icon {
+    font-size: 5rem;
     margin-bottom: var(--spacing-lg);
     line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
 }
 
-.slider-title {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    color: var(--text-color);
+.bg-slide-title {
+    font-size: 3rem;
+    font-weight: 800;
     margin-bottom: var(--spacing-sm);
+    letter-spacing: -0.02em;
 }
 
-.slider-text {
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 280px;
+.bg-slide-text {
+    font-size: 1.5rem;
+    font-weight: 400;
+    opacity: 0.9;
 }
 
-/* ─── Slider Dots ───────────────────────────────────────────── */
+/* ─── Glowing Orbs (Lichtreflexe) ───────────────────────────── */
 
-.slider-dots {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: var(--spacing-lg);
-}
-
-.slider-dot {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
+.orb {
+    position: absolute;
     border-radius: 50%;
-    background: transparent;
-    border: 2px solid var(--text-muted);
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    filter: blur(60px);
+    opacity: 0.6;
+    pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite;
 }
 
-.slider-dot.active {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+.orb-1 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 255, 200, 0.8), transparent 70%);
+    top: 10%;
+    right: 15%;
+    animation-delay: 0s;
 }
 
-.slider-dot:hover {
-    border-color: var(--primary-hover);
+.orb-2 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(100, 200, 255, 0.7), transparent 70%);
+    bottom: 15%;
+    left: 10%;
+    animation-delay: 2s;
 }
 
-/* ─── Register Form (right column) ──────────────────────────── */
+.orb-3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(200, 255, 150, 0.6), transparent 70%);
+    top: 50%;
+    left: 40%;
+    animation-delay: 4s;
+}
 
-.register-form-col {
-    flex: 1;
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.1); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+/* ─── Hintergrund-Slider Dots ───────────────────────────────── */
+
+.bg-slider-dots {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: var(--spacing-2xl);
-    text-align: center;
+    gap: 0.75rem;
+    z-index: 5;
 }
 
-.register-form-col h1 {
+.bg-slider-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.bg-slider-dot.active {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 1);
+    transform: scale(1.2);
+}
+
+.bg-slider-dot:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* ─── Ebene 2: Glas-Formular (Glassmorphism) ────────────────── */
+
+.glass-auth-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 420px;
+    margin-right: 8%;
+    padding: var(--spacing-2xl);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    color: #fff;
+}
+
+.glass-auth-card h1 {
     font-size: var(--font-size-xl);
     margin-bottom: var(--spacing-xs);
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.register-form-col .register-hint {
-    margin-top: var(--spacing-lg);
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
+.glass-auth-card .subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Glas-Inputs */
+.glass-auth-card .form-group label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.glass-auth-card .form-group input {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.glass-auth-card .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-auth-card .form-group input:focus {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Glänzender Registrieren-Button */
+.glass-auth-card .btn-primary {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.3) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: all 0.3s ease;
+}
+
+.glass-auth-card .btn-primary:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.4) 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.glass-auth-card .error-message {
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.glass-auth-card .register-hint {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.glass-auth-card .register-hint a {
+    color: #fff;
+    text-decoration: underline;
 }
 
 .logo {
@@ -796,25 +911,36 @@ body:has(.app-header) .theme-toggle-global {
    Responsive
    ======================================================================== */
 
+/* Register Overlay – Responsive */
 @media (max-width: 768px) {
-    .register-split {
-        flex-direction: column;
-        min-height: auto;
+    .register-overlay {
+        justify-content: center;
     }
 
-    .register-slider {
-        padding: var(--spacing-lg) var(--spacing-md);
-        min-height: auto;
+    .glass-auth-card {
+        margin-right: 0;
+        max-width: 90%;
     }
 
-    .slider-icon {
-        font-size: 2.5rem;
-        margin-bottom: var(--spacing-md);
+    .bg-slide-content {
+        max-width: 60%;
     }
 
-    .register-form-col {
-        padding: var(--spacing-lg);
+    .bg-slide-icon {
+        font-size: 3.5rem;
     }
+
+    .bg-slide-title {
+        font-size: 2rem;
+    }
+
+    .bg-slide-text {
+        font-size: 1.1rem;
+    }
+
+    .orb-1 { width: 200px; height: 200px; }
+    .orb-2 { width: 180px; height: 180px; }
+    .orb-3 { width: 150px; height: 150px; }
 }
 
 @media (max-width: 600px) {
@@ -834,6 +960,28 @@ body:has(.app-header) .theme-toggle-global {
     .login-card,
     .register-card {
         padding: var(--spacing-lg);
+    }
+
+    .glass-auth-card {
+        padding: var(--spacing-lg);
+        max-width: 92%;
+    }
+
+    .bg-slide-content {
+        max-width: 75%;
+    }
+
+    .bg-slide-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .bg-slide-title {
+        font-size: 1.5rem;
+    }
+
+    .bg-slide-text {
+        font-size: 1rem;
     }
 
     .notes-header {
@@ -856,7 +1004,24 @@ body:has(.app-header) .theme-toggle-global {
 }
 
 @media (max-width: 480px) {
-    .register-slider {
-        display: none;
+    .bg-slide-content {
+        max-width: 85%;
+    }
+
+    .bg-slide-icon {
+        font-size: 2rem;
+    }
+
+    .bg-slide-title {
+        font-size: 1.25rem;
+    }
+
+    .bg-slide-text {
+        font-size: 0.875rem;
+    }
+
+    .glass-auth-card {
+        padding: var(--spacing-md);
+        max-width: 95%;
     }
 }

@@ -51,51 +51,59 @@
             <p class="register-hint">Noch kein Konto? <a href="#" id="show-register">Registrieren</a></p>
         </div>
 
-        <div class="register-card register-card-split" style="display:none;">
-            <div class="register-split">
-                <!-- Linke Spalte: Onboarding-Carousel -->
-                <div class="register-slider">
-                    <div class="slider-track">
-                        <div class="slider-slide active">
-                            <div class="slider-icon">✍️</div>
-                            <h3 class="slider-title">Minimalistisch</h3>
-                            <p class="slider-text">Fokus auf das Wesentliche. Ein ablenkungsfreier Markdown-Editor für deine Gedanken.</p>
-                        </div>
-                        <div class="slider-slide">
-                            <div class="slider-icon">🔄</div>
-                            <h3 class="slider-title">Plattformübergreifend</h3>
-                            <p class="slider-text">Nahtloser Sync. Schreibe im Web, auf Windows oder Android – immer auf dem neuesten Stand.</p>
-                        </div>
-                        <div class="slider-slide">
-                            <div class="slider-icon">🗂️</div>
-                            <h3 class="slider-title">Perfekt Organisiert</h3>
-                            <p class="slider-text">Deine Regeln. Strukturiere Notizen mit dynamischen Kategorien und Ordnern.</p>
-                        </div>
-                    </div>
-                    <div class="slider-dots">
-                        <span class="slider-dot active" data-slide="0"></span>
-                        <span class="slider-dot" data-slide="1"></span>
-                        <span class="slider-dot" data-slide="2"></span>
+        <!-- ========== REGISTER OVERLAY (Immersive) ========== -->
+        <div class="register-overlay" style="display:none;">
+            <!-- Ebene 1: Hintergrund-Slider (bildschirmfüllend) -->
+            <div class="register-bg-slider">
+                <div class="bg-slide bg-slide-1 active">
+                    <div class="bg-slide-content">
+                        <div class="bg-slide-icon">✍️</div>
+                        <h2 class="bg-slide-title">Minimalistisch.</h2>
+                        <p class="bg-slide-text">Fokus auf das Wesentliche.</p>
                     </div>
                 </div>
-                <!-- Rechte Spalte: Registrierungsformular -->
-                <div class="register-form-col">
-                    <h1>Registrieren</h1>
-                    <p class="subtitle">Erstelle ein neues Konto</p>
-                    <form id="register-form">
-                        <div class="form-group">
-                            <label for="reg-username">Benutzername</label>
-                            <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="reg-password">Passwort</label>
-                            <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Registrieren</button>
-                        <p id="register-error" class="error-message"></p>
-                    </form>
-                    <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
+                <div class="bg-slide bg-slide-2">
+                    <div class="bg-slide-content">
+                        <div class="bg-slide-icon">🔄</div>
+                        <h2 class="bg-slide-title">Plattformübergreifend.</h2>
+                        <p class="bg-slide-text">Nahtloser Sync überall.</p>
+                    </div>
                 </div>
+                <div class="bg-slide bg-slide-3">
+                    <div class="bg-slide-content">
+                        <div class="bg-slide-icon">🗂️</div>
+                        <h2 class="bg-slide-title">Perfekt Organisiert.</h2>
+                        <p class="bg-slide-text">Deine eigenen Regeln.</p>
+                    </div>
+                </div>
+                <!-- Glowing Orbs -->
+                <div class="orb orb-1"></div>
+                <div class="orb orb-2"></div>
+                <div class="orb orb-3"></div>
+                <!-- Navigations-Punkte -->
+                <div class="bg-slider-dots">
+                    <span class="bg-slider-dot active" data-slide="0"></span>
+                    <span class="bg-slider-dot" data-slide="1"></span>
+                    <span class="bg-slider-dot" data-slide="2"></span>
+                </div>
+            </div>
+            <!-- Ebene 2: Glas-Formular (schwebend) -->
+            <div class="glass-auth-card">
+                <h1>Registrieren</h1>
+                <p class="subtitle">Erstelle ein neues Konto</p>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">Benutzername</label>
+                        <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Passwort</label>
+                        <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrieren</button>
+                    <p id="register-error" class="error-message"></p>
+                </form>
+                <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
             </div>
         </div>
     </div>

@@ -16,7 +16,7 @@ const themeToggle = document.getElementById('theme-toggle');
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 const loginCard = document.querySelector('.login-card');
-const registerCard = document.querySelector('.register-card');
+const registerCard = document.querySelector('.register-overlay');
 const loginError = document.getElementById('login-error');
 const registerError = document.getElementById('register-error');
 const notesError = document.getElementById('notes-error');
@@ -115,8 +115,8 @@ function showRegisterCard() {
     loginCard.style.display = 'none';
     registerCard.style.display = '';
     registerError.textContent = '';
-    // Initialize onboarding slider when register card is shown
-    setTimeout(initRegisterSlider, 50);
+    // Initialize immersive background slider when register overlay is shown
+    setTimeout(initRegisterBgSlider, 50);
 }
 
 // ─── Login ───────────────────────────────────────────────────────────────
@@ -429,16 +429,16 @@ function formatDate(dateStr) {
     }
 }
 
-// ─── Register Slider (Onboarding Carousel) ──────────────────────────────
+// ─── Register Background Slider (Immersive) ─────────────────────────────
 
-let sliderInterval = null;
+let bgSliderInterval = null;
 
-function initRegisterSlider() {
-    const sliderEl = document.querySelector('.register-slider');
+function initRegisterBgSlider() {
+    const sliderEl = document.querySelector('.register-bg-slider');
     if (!sliderEl) return;
 
-    const slides = sliderEl.querySelectorAll('.slider-slide');
-    const dots = sliderEl.querySelectorAll('.slider-dot');
+    const slides = sliderEl.querySelectorAll('.bg-slide');
+    const dots = sliderEl.querySelectorAll('.bg-slider-dot');
     if (slides.length === 0) return;
 
     let currentSlide = 0;
@@ -457,13 +457,13 @@ function initRegisterSlider() {
 
     function startSlider() {
         stopSlider();
-        sliderInterval = setInterval(nextSlide, 4500);
+        bgSliderInterval = setInterval(nextSlide, 5000);
     }
 
     function stopSlider() {
-        if (sliderInterval) {
-            clearInterval(sliderInterval);
-            sliderInterval = null;
+        if (bgSliderInterval) {
+            clearInterval(bgSliderInterval);
+            bgSliderInterval = null;
         }
     }
 
@@ -483,7 +483,7 @@ function initRegisterSlider() {
         });
     });
 
-    // Start auto-rotation
+    // Start auto-rotation (5s for slow, immersive crossfade)
     startSlider();
 }
 
