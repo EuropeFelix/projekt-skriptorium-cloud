@@ -173,6 +173,12 @@
     color: #fff;
 }
 
+[data-theme="frutiger-aero"] .register-slider {
+    background: rgba(200, 230, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
 [data-theme="frutiger-aero"] .logo {
     color: var(--primary-color);
 }
@@ -224,7 +230,16 @@ a:hover {
    Login & Register Cards
    ======================================================================== */
 
-.login-card,
+.login-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
 .register-card {
     background: var(--bg-card);
     border-radius: var(--border-radius-lg);
@@ -233,6 +248,131 @@ a:hover {
     max-width: 400px;
     box-shadow: var(--shadow-lg);
     text-align: center;
+}
+
+/* Split register card – wider for slider + form */
+.register-card-split {
+    max-width: 820px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.register-split {
+    display: flex;
+    min-height: 420px;
+}
+
+/* ─── Slider (left column) ──────────────────────────────────── */
+
+.register-slider {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    background: var(--bg-secondary);
+    position: relative;
+    min-height: 100%;
+}
+
+.slider-track {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+    padding: var(--spacing-md);
+}
+
+.slider-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+}
+
+.slider-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-lg);
+    line-height: 1;
+}
+
+.slider-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.slider-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 280px;
+}
+
+/* ─── Slider Dots ───────────────────────────────────────────── */
+
+.slider-dots {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: var(--spacing-lg);
+}
+
+.slider-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid var(--text-muted);
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.slider-dot.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.slider-dot:hover {
+    border-color: var(--primary-hover);
+}
+
+/* ─── Register Form (right column) ──────────────────────────── */
+
+.register-form-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.register-form-col h1 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xs);
+}
+
+.register-form-col .register-hint {
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
 }
 
 .logo {
@@ -656,6 +796,27 @@ body:has(.app-header) .theme-toggle-global {
    Responsive
    ======================================================================== */
 
+@media (max-width: 768px) {
+    .register-split {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .register-slider {
+        padding: var(--spacing-lg) var(--spacing-md);
+        min-height: auto;
+    }
+
+    .slider-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .register-form-col {
+        padding: var(--spacing-lg);
+    }
+}
+
 @media (max-width: 600px) {
     .app-header {
         padding: 0.4rem 0.75rem;
@@ -691,5 +852,11 @@ body:has(.app-header) .theme-toggle-global {
 
     body:has(.app-header) .theme-toggle-global {
         top: calc(0.6rem + 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .register-slider {
+        display: none;
     }
 }

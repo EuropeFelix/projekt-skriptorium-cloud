@@ -115,6 +115,8 @@ function showRegisterCard() {
     loginCard.style.display = 'none';
     registerCard.style.display = '';
     registerError.textContent = '';
+    // Initialize onboarding slider when register card is shown
+    setTimeout(initRegisterSlider, 50);
 }
 
 // ─── Login ───────────────────────────────────────────────────────────────
@@ -425,6 +427,64 @@ function formatDate(dateStr) {
     } catch {
         return dateStr;
     }
+}
+
+// ─── Register Slider (Onboarding Carousel) ──────────────────────────────
+
+let sliderInterval = null;
+
+function initRegisterSlider() {
+    const sliderEl = document.querySelector('.register-slider');
+    if (!sliderEl) return;
+
+    const slides = sliderEl.querySelectorAll('.slider-slide');
+    const dots = sliderEl.querySelectorAll('.slider-dot');
+    if (slides.length === 0) return;
+
+    let currentSlide = 0;
+
+    function showSlide(index) {
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        showSlide((currentSlide + 1) % slides.length);
+    }
+
+    function startSlider() {
+        stopSlider();
+        sliderInterval = setInterval(nextSlide, 4500);
+    }
+
+    function stopSlider() {
+        if (sliderInterval) {
+            clearInterval(sliderInterval);
+            sliderInterval = null;
+        }
+    }
+
+    function resetSlider() {
+        stopSlider();
+        startSlider();
+    }
+
+    // Dot click handlers
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.slide, 10);
+            if (index !== currentSlide) {
+                showSlide(index);
+                resetSlider();
+            }
+        });
+    });
+
+    // Start auto-rotation
+    startSlider();
 }
 
 // ─── Theme Switcher ──────────────────────────────────────────────────────

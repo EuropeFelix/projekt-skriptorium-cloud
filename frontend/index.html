@@ -51,30 +51,52 @@
             <p class="register-hint">Noch kein Konto? <a href="#" id="show-register">Registrieren</a></p>
         </div>
 
-        <div class="register-card" style="display:none;">
-            <div class="logo">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="8.5" cy="7" r="4"></circle>
-                    <line x1="20" y1="8" x2="20" y2="14"></line>
-                    <line x1="23" y1="11" x2="17" y2="11"></line>
-                </svg>
+        <div class="register-card register-card-split" style="display:none;">
+            <div class="register-split">
+                <!-- Linke Spalte: Onboarding-Carousel -->
+                <div class="register-slider">
+                    <div class="slider-track">
+                        <div class="slider-slide active">
+                            <div class="slider-icon">✍️</div>
+                            <h3 class="slider-title">Minimalistisch</h3>
+                            <p class="slider-text">Fokus auf das Wesentliche. Ein ablenkungsfreier Markdown-Editor für deine Gedanken.</p>
+                        </div>
+                        <div class="slider-slide">
+                            <div class="slider-icon">🔄</div>
+                            <h3 class="slider-title">Plattformübergreifend</h3>
+                            <p class="slider-text">Nahtloser Sync. Schreibe im Web, auf Windows oder Android – immer auf dem neuesten Stand.</p>
+                        </div>
+                        <div class="slider-slide">
+                            <div class="slider-icon">🗂️</div>
+                            <h3 class="slider-title">Perfekt Organisiert</h3>
+                            <p class="slider-text">Deine Regeln. Strukturiere Notizen mit dynamischen Kategorien und Ordnern.</p>
+                        </div>
+                    </div>
+                    <div class="slider-dots">
+                        <span class="slider-dot active" data-slide="0"></span>
+                        <span class="slider-dot" data-slide="1"></span>
+                        <span class="slider-dot" data-slide="2"></span>
+                    </div>
+                </div>
+                <!-- Rechte Spalte: Registrierungsformular -->
+                <div class="register-form-col">
+                    <h1>Registrieren</h1>
+                    <p class="subtitle">Erstelle ein neues Konto</p>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="reg-username">Benutzername</label>
+                            <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Passwort</label>
+                            <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrieren</button>
+                        <p id="register-error" class="error-message"></p>
+                    </form>
+                    <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
+                </div>
             </div>
-            <h1>Registrieren</h1>
-            <p class="subtitle">Erstelle ein neues Konto</p>
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="reg-username">Benutzername</label>
-                    <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Passwort</label>
-                    <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Registrieren</button>
-                <p id="register-error" class="error-message"></p>
-            </form>
-            <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
         </div>
     </div>
 
