@@ -118,27 +118,22 @@ function showNotesView() {
 function showLoginCard() {
     const loginView = document.getElementById('login-view-container');
     const registerView = document.getElementById('register-view-container');
-    if (loginView) loginView.style.display = 'flex';
+    
+    if (loginView) loginView.style.display = 'flex'; 
     if (registerView) registerView.style.display = 'none';
-    loginError.textContent = '';
 }
 
 function showRegisterCard() {
     const loginView = document.getElementById('login-view-container');
     const registerView = document.getElementById('register-view-container');
+    
     if (loginView) loginView.style.display = 'none';
-    if (registerView) registerView.style.display = 'flex';
-    registerError.textContent = '';
-    // Initialize immersive background slider when register overlay is shown
-    setTimeout(() => {
-        try {
-            if (typeof initRegisterBgSlider === 'function') {
-                initRegisterBgSlider();
-            }
-        } catch (e) {
-            console.warn('Register slider init failed:', e);
-        }
-    }, 50);
+    if (registerView) registerView.style.display = 'flex'; 
+    
+    // Slider starten, falls vorhanden
+    if (typeof initRegisterBgSlider === 'function') {
+        initRegisterBgSlider();
+    }
 }
 
 // ─── Event Listeners (with null guards) ─────────────────────────────────
