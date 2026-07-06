@@ -116,17 +116,23 @@ function showNotesView() {
 // ─── Login / Register UI Toggle ──────────────────────────────────────────
 
 function showLoginCard() {
-    loginCard.style.display = 'block';
-    registerCard.style.display = 'none';
+    if (loginCard) loginCard.style.display = 'block';
+    if (registerCard) registerCard.style.display = 'none';
     loginError.textContent = '';
 }
 
 function showRegisterCard() {
-    loginCard.style.display = 'none';
-    registerCard.style.display = 'flex';
+    if (loginCard) loginCard.style.display = 'none';
+    if (registerCard) registerCard.style.display = 'flex';
     registerError.textContent = '';
     // Initialize immersive background slider when register overlay is shown
-    setTimeout(initRegisterBgSlider, 50);
+    setTimeout(() => {
+        try {
+            initRegisterBgSlider();
+        } catch (e) {
+            console.warn('Register slider init failed:', e);
+        }
+    }, 50);
 }
 
 // ─── Event Listeners (with null guards) ─────────────────────────────────
@@ -476,9 +482,11 @@ function setTheme(theme) {
         document.documentElement.removeAttribute('data-theme');
     }
     localStorage.setItem(THEME_STORAGE_KEY, theme);
-    // Update toggle icon
-    themeToggle.textContent = theme === 'frutiger-aero' ? '🌙' : '💧';
-    themeToggle.title = theme === 'frutiger-aero' ? 'Dark Mode aktivieren' : 'Frutiger Aero aktivieren';
+    // Update toggle icon (with null guard)
+    if (themeToggle) {
+        themeToggle.textContent = theme === 'frutiger-aero' ? '🌙' : '💧';
+        themeToggle.title = theme === 'frutiger-aero' ? 'Dark Mode aktivieren' : 'Frutiger Aero aktivieren';
+    }
 }
 
 // Initialize theme from localStorage on page load
