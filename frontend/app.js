@@ -49,8 +49,18 @@ function clearCredentials() {
 function getAuthHeader() {
     const creds = getCredentials();
     if (!creds) return null;
-    const encoded = btoa(`${creds.username}:${creds.password}`);
+    const encoded = utf8ToBase64(`${creds.username}:${creds.password}`);
     return `Basic ${encoded}`;
+}
+
+function utf8ToBase64(str) {
+    // btoa only supports Latin1; use TextEncoder for full Unicode support
+    const bytes = new TextEncoder().encode(str);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
 }
 
 function getUsername() {
@@ -147,6 +157,7 @@ if (loginForm) {
                 loginError.textContent = 'Ungültiger Benutzername oder Passwort.';
             }
         } catch (err) {
+            if (err.message === 'Unauthorized') return;
             clearCredentials();
             loginError.textContent = 'Verbindungsfehler zum Server.';
         }
@@ -242,14 +253,28 @@ async function loadNotes() {
 // ─── Render Notes ────────────────────────────────────────────────────────
 
 function renderNotes(notes) {
+    // Store notes for quick lookup by edit handlers
+    window._scriptoriumNotesCache = notes;
+
     if (notes.length === 0) {
         notesContainer.innerHTML = '<p class="empty-state">Keine Notizen vorhanden. Erstelle deine erste Notiz!</p>';
         return;
     }
 
-    // Extract unique categories dynamically
-    const categories = [...new Set(notes.map(note => note.category))].sort((a, b) => {
-        // "Allgemein" always first
+    // Group notes by category in a single pass
+    const categoryMap = new Map();
+    for (const note of notes) {
+        const cat = note.category || 'Allgemein';
+        const list = categoryMap.get(cat);
+        if (list) {
+            list.push(note);
+        } else {
+            categoryMap.set(cat, [note]);
+        }
+    }
+
+    // Sort categories: "Allgemein" first, then alphabetical
+    const categories = [...categoryMap.keys()].sort((a, b) => {
         if (a === 'Allgemein') return -1;
         if (b === 'Allgemein') return 1;
         return a.localeCompare(b);
@@ -258,7 +283,7 @@ function renderNotes(notes) {
     // Build grouped HTML
     let html = '';
     for (const category of categories) {
-        const categoryNotes = notes.filter(note => note.category === category);
+        const categoryNotes = categoryMap.get(category);
         html += `
             <div class="category-section">
                 <h3 class="category-heading">
@@ -293,16 +318,17 @@ function renderNotes(notes) {
         btn.addEventListener('click', () => deleteNote(parseInt(btn.dataset.id)));
     });
 
-    // Attach edit handlers
+    // Attach edit handlers (use cached notes for lookup)
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => editNote(parseInt(btn.dataset.id), notes));
+        btn.addEventListener('click', () => editNote(parseInt(btn.dataset.id)));
     });
 }
 
 // ─── Edit Note ───────────────────────────────────────────────────────────
 
-async function editNote(id, notes) {
-    // Find the note in the list
+async function editNote(id) {
+    // Find the note in the cached list
+    const notes = window._scriptoriumNotesCache || [];
     const note = notes.find(n => n.id === id);
     if (!note) return;
 
@@ -444,7 +470,11 @@ function getSavedTheme() {
 }
 
 function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme === 'frutiger-aero' ? 'frutiger-aero' : '');
+    if (theme === 'frutiger-aero') {
+        document.documentElement.setAttribute('data-theme', 'frutiger-aero');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
     localStorage.setItem(THEME_STORAGE_KEY, theme);
     // Update toggle icon
     themeToggle.textContent = theme === 'frutiger-aero' ? '🌙' : '💧';

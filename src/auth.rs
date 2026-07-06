@@ -42,7 +42,8 @@ where
         // 2. Check that it starts with "Basic "
         let encoded = auth_header
             .strip_prefix("Basic ")
-            .ok_or(AuthError::InvalidScheme)?;
+            .ok_or(AuthError::InvalidScheme)?
+            .to_string();
 
         // 3. Base64-decode the credentials
         let decoded = base64::Engine::decode(
@@ -65,7 +66,7 @@ where
             .await
             .map_err(|_| AuthError::InternalError)?;
 
-        let (user_id, _) = user.ok_or(AuthError::Unauthorized)?;
+        let user_id = user.ok_or(AuthError::Unauthorized)?;
 
         Ok(AuthUser { user_id })
     }

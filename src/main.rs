@@ -110,6 +110,13 @@ async fn register_handler(
         ));
     }
 
+    if req.password.len() < 4 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({ "error": "Password must be at least 4 characters" })),
+        ));
+    }
+
     // Check if username already exists
     if db
         .username_exists(req.username.clone())

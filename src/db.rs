@@ -54,10 +54,16 @@ impl Database {
         )?;
 
         // Add category column for databases created before the category feature
-        // If the column already exists, the error is silently ignored
-        let _ = conn.execute_batch(
-            "ALTER TABLE notes ADD COLUMN category TEXT NOT NULL DEFAULT 'Allgemein';"
-        );
+        // Only run migration if the column doesn't already exist
+        let has_category = conn
+            .prepare("SELECT COUNT(*) FROM pragma_table_info('notes') WHERE name = 'category'")
+            .and_then(|mut stmt| stmt.query_row([], |row| row.get::<_, i64>(0)))
+            .unwrap_or(0);
+        if has_category == 0 {
+            conn.execute_batch(
+                "ALTER TABLE notes ADD COLUMN category TEXT NOT NULL DEFAULT 'Allgemein';"
+            )?;
+        }
 
         tracing::info!("Database tables initialized");
         Ok(())
@@ -84,12 +90,12 @@ impl Database {
     }
 
     /// Looks up a user by username and verifies the password against the stored hash.
-    /// Returns `Some((user_id, password_hash))` if credentials are valid, `None` otherwise.
+    /// Returns `Some(user_id)` if credentials are valid, `None` otherwise.
     pub async fn verify_user(
         &self,
         username: String,
         password: String,
-    ) -> SqliteResult<Option<(i64, String)>> {
+    ) -> SqliteResult<Option<i64>> {
         let conn = Arc::clone(&self.conn);
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
@@ -109,7 +115,7 @@ impl Database {
                     // Verify the password using bcrypt
                     let valid = bcrypt::verify(&password, &password_hash).unwrap_or(false);
                     if valid {
-                        Ok(Some((user_id, password_hash)))
+                        Ok(Some(user_id))
                     } else {
                         Ok(None)
                     }
@@ -128,9 +134,9 @@ impl Database {
         tokio::task::spawn_blocking(move || {
             let conn = conn.lock().unwrap();
             let mut stmt =
-                conn.prepare("SELECT COUNT(*) FROM users WHERE username = ?1")?;
-            let count: i64 = stmt.query_row(params![username], |row| row.get(0))?;
-            Ok(count > 0)
+                conn.prepare("SELECT 1 FROM users WHERE username = ?1 LIMIT 1")?;
+            let exists = stmt.exists(params![username])?;
+            Ok(exists)
         })
         .await
         .expect("Blocking task panicked")

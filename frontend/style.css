@@ -224,16 +224,7 @@ a:hover {
    Login & Register Cards
    ======================================================================== */
 
-.login-card {
-    background: var(--bg-card);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-2xl);
-    width: 100%;
-    max-width: 400px;
-    box-shadow: var(--shadow-lg);
-    text-align: center;
-}
-
+.login-card,
 .register-card {
     background: var(--bg-card);
     border-radius: var(--border-radius-lg);
