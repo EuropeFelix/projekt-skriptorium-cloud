@@ -116,19 +116,25 @@ function showNotesView() {
 // ─── Login / Register UI Toggle ──────────────────────────────────────────
 
 function showLoginCard() {
-    if (loginCard) loginCard.style.display = 'block';
-    if (registerCard) registerCard.style.display = 'none';
+    const loginView = document.getElementById('login-view-container');
+    const registerView = document.getElementById('register-view-container');
+    if (loginView) loginView.style.display = 'flex';
+    if (registerView) registerView.style.display = 'none';
     loginError.textContent = '';
 }
 
 function showRegisterCard() {
-    if (loginCard) loginCard.style.display = 'none';
-    if (registerCard) registerCard.style.display = 'flex';
+    const loginView = document.getElementById('login-view-container');
+    const registerView = document.getElementById('register-view-container');
+    if (loginView) loginView.style.display = 'none';
+    if (registerView) registerView.style.display = 'flex';
     registerError.textContent = '';
     // Initialize immersive background slider when register overlay is shown
     setTimeout(() => {
         try {
-            initRegisterBgSlider();
+            if (typeof initRegisterBgSlider === 'function') {
+                initRegisterBgSlider();
+            }
         } catch (e) {
             console.warn('Register slider init failed:', e);
         }
