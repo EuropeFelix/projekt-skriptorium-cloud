@@ -106,14 +106,14 @@ function showNotesView() {
 // ─── Login / Register UI Toggle ──────────────────────────────────────────
 
 function showLoginCard() {
-    loginCard.style.display = '';
+    loginCard.style.display = 'block';
     registerCard.style.display = 'none';
     loginError.textContent = '';
 }
 
 function showRegisterCard() {
     loginCard.style.display = 'none';
-    registerCard.style.display = '';
+    registerCard.style.display = 'flex';
     registerError.textContent = '';
     // Initialize immersive background slider when register overlay is shown
     setTimeout(initRegisterBgSlider, 50);
