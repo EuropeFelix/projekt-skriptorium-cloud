@@ -98,11 +98,30 @@
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
+[data-theme="frutiger-aero"] .app-header {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+}
+
 [data-theme="frutiger-aero"] .notes-header {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="frutiger-aero"] .download-btn {
+    background: linear-gradient(180deg, #1e88e5 0%, #1565c0 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(21, 101, 192, 0.3);
+    color: #fff;
+}
+
+[data-theme="frutiger-aero"] .download-btn:hover {
+    background: linear-gradient(180deg, #42a5f5 0%, #1976d2 100%);
+    box-shadow: 0 4px 8px rgba(21, 101, 192, 0.4);
 }
 
 [data-theme="frutiger-aero"] .user-badge {
@@ -198,6 +217,7 @@ a:hover {
     justify-content: center;
     min-height: 100vh;
     padding: var(--spacing-md);
+    padding-top: calc(2.5rem + var(--spacing-md));
 }
 
 /* ========================================================================
@@ -373,7 +393,7 @@ a:hover {
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     position: fixed;
-    top: 0;
+    top: 2.5rem;
     left: 0;
     right: 0;
     z-index: 100;
@@ -544,13 +564,71 @@ a:hover {
 }
 
 /* ========================================================================
+   App Header (global, above login & notes)
+   ======================================================================== */
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.25rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.app-header-title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: 0.02em;
+}
+
+.app-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--border-radius);
+    background: var(--accent-color);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--transition), transform var(--transition);
+    white-space: nowrap;
+}
+
+.download-btn:hover {
+    background: var(--accent-hover);
+    color: var(--text-color);
+    transform: translateY(-1px);
+}
+
+.download-btn:active {
+    transform: scale(0.97);
+}
+
+/* ========================================================================
    Global Theme Toggle
    Always visible, fixed to top-right of the viewport
    ======================================================================== */
 
 .theme-toggle-global {
     position: fixed;
-    top: 0.75rem;
+    top: 0.6rem;
     right: 0.75rem;
     z-index: 10000;
     background: none;
@@ -564,6 +642,11 @@ a:hover {
     filter: grayscale(0.3);
 }
 
+/* When app-header is present, shift theme toggle down */
+body:has(.app-header) .theme-toggle-global {
+    top: calc(0.6rem + 2.5rem);
+}
+
 .theme-toggle-global:hover {
     transform: scale(1.15);
     filter: grayscale(0);
@@ -574,6 +657,19 @@ a:hover {
    ======================================================================== */
 
 @media (max-width: 600px) {
+    .app-header {
+        padding: 0.4rem 0.75rem;
+    }
+
+    .app-header-title {
+        font-size: var(--font-size-sm);
+    }
+
+    .download-btn {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
     .login-card,
     .register-card {
         padding: var(--spacing-lg);
@@ -581,6 +677,7 @@ a:hover {
 
     .notes-header {
         padding: var(--spacing-sm) var(--spacing-md);
+        top: 2rem;
     }
 
     .notes-header h1 {
@@ -589,6 +686,10 @@ a:hover {
 
     .notes-container {
         padding: var(--spacing-md);
-        margin-top: 70px;
+        margin-top: 60px;
+    }
+
+    body:has(.app-header) .theme-toggle-global {
+        top: calc(0.6rem + 2rem);
     }
 }
