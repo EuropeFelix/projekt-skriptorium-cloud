@@ -26,8 +26,8 @@
     <button id="theme-toggle" class="theme-toggle-global" title="Theme wechseln">💧</button>
 
     <!-- ========== LOGIN VIEW ========== -->
-    <div id="login-view" class="view">
-        <div class="login-card" id="login-view-container">
+    <div id="login-view-container">
+        <div class="login-card">
             <div class="logo">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path>
@@ -50,61 +50,61 @@
             </form>
             <p class="register-hint">Noch kein Konto? <a href="#" id="show-register">Registrieren</a></p>
         </div>
+    </div>
 
-        <!-- ========== REGISTER OVERLAY (Immersive) ========== -->
-        <div class="register-overlay" id="register-view-container" style="display:none;">
-            <!-- Ebene 1: Hintergrund-Slider (bildschirmfüllend) -->
-            <div class="register-bg-slider">
-                <div class="bg-slide bg-slide-1 active">
-                    <div class="bg-slide-content">
-                        <div class="bg-slide-icon">✍️</div>
-                        <h2 class="bg-slide-title">Minimalistisch.</h2>
-                        <p class="bg-slide-text">Fokus auf das Wesentliche.</p>
-                    </div>
-                </div>
-                <div class="bg-slide bg-slide-2">
-                    <div class="bg-slide-content">
-                        <div class="bg-slide-icon">🔄</div>
-                        <h2 class="bg-slide-title">Plattformübergreifend.</h2>
-                        <p class="bg-slide-text">Nahtloser Sync überall.</p>
-                    </div>
-                </div>
-                <div class="bg-slide bg-slide-3">
-                    <div class="bg-slide-content">
-                        <div class="bg-slide-icon">🗂️</div>
-                        <h2 class="bg-slide-title">Perfekt Organisiert.</h2>
-                        <p class="bg-slide-text">Deine eigenen Regeln.</p>
-                    </div>
-                </div>
-                <!-- Glowing Orbs -->
-                <div class="orb orb-1"></div>
-                <div class="orb orb-2"></div>
-                <div class="orb orb-3"></div>
-                <!-- Navigations-Punkte -->
-                <div class="bg-slider-dots">
-                    <span class="bg-slider-dot active" data-slide="0"></span>
-                    <span class="bg-slider-dot" data-slide="1"></span>
-                    <span class="bg-slider-dot" data-slide="2"></span>
+    <!-- ========== REGISTER VIEW (Immersive) ========== -->
+    <div id="register-view-container" style="display:none;">
+        <!-- Ebene 1: Hintergrund-Slider (bildschirmfüllend) -->
+        <div class="register-bg-slider">
+            <div class="bg-slide bg-slide-1 active">
+                <div class="bg-slide-content">
+                    <div class="bg-slide-icon">✍️</div>
+                    <h2 class="bg-slide-title">Minimalistisch.</h2>
+                    <p class="bg-slide-text">Fokus auf das Wesentliche.</p>
                 </div>
             </div>
-            <!-- Ebene 2: Glas-Formular (schwebend) -->
-            <div class="glass-auth-card">
-                <h1>Registrieren</h1>
-                <p class="subtitle">Erstelle ein neues Konto</p>
-                <form id="register-form">
-                    <div class="form-group">
-                        <label for="reg-username">Benutzername</label>
-                        <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Passwort</label>
-                        <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Registrieren</button>
-                    <p id="register-error" class="error-message"></p>
-                </form>
-                <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
+            <div class="bg-slide bg-slide-2">
+                <div class="bg-slide-content">
+                    <div class="bg-slide-icon">🔄</div>
+                    <h2 class="bg-slide-title">Plattformübergreifend.</h2>
+                    <p class="bg-slide-text">Nahtloser Sync überall.</p>
+                </div>
             </div>
+            <div class="bg-slide bg-slide-3">
+                <div class="bg-slide-content">
+                    <div class="bg-slide-icon">🗂️</div>
+                    <h2 class="bg-slide-title">Perfekt Organisiert.</h2>
+                    <p class="bg-slide-text">Deine eigenen Regeln.</p>
+                </div>
+            </div>
+            <!-- Glowing Orbs -->
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+            <!-- Navigations-Punkte -->
+            <div class="bg-slider-dots">
+                <span class="bg-slider-dot active" data-slide="0"></span>
+                <span class="bg-slider-dot" data-slide="1"></span>
+                <span class="bg-slider-dot" data-slide="2"></span>
+            </div>
+        </div>
+        <!-- Ebene 2: Glas-Formular (schwebend) -->
+        <div class="glass-auth-card">
+            <h1>Registrieren</h1>
+            <p class="subtitle">Erstelle ein neues Konto</p>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">Benutzername</label>
+                    <input type="text" id="reg-username" name="username" placeholder="Benutzername" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Passwort</label>
+                    <input type="password" id="reg-password" name="password" placeholder="Passwort" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrieren</button>
+                <p id="register-error" class="error-message"></p>
+            </form>
+            <p class="register-hint">Bereits registriert? <a href="#" id="show-login">Zum Login</a></p>
         </div>
     </div>
 

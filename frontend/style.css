@@ -83,7 +83,9 @@
     background-attachment: fixed;
 }
 
-[data-theme="frutiger-aero"] .view {
+[data-theme="frutiger-aero"] .view,
+[data-theme="frutiger-aero"] #login-view-container,
+[data-theme="frutiger-aero"] #register-view-container {
     background: linear-gradient(135deg, #87CEEB 0%, #E0F7FA 50%, #C8E6C9 100%);
     background-attachment: fixed;
 }
@@ -208,16 +210,33 @@ a:hover {
 }
 
 /* ========================================================================
-   Views
+   Login-View Container (fullscreen)
    ======================================================================== */
 
-.view {
+#login-view-container {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100vw;
     min-height: 100vh;
+    position: relative;
+    overflow: hidden;
     padding: var(--spacing-md);
     padding-top: calc(2.5rem + var(--spacing-md));
+}
+
+/* ========================================================================
+   Register-View Container (fullscreen immersive)
+   ======================================================================== */
+
+#register-view-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
 }
 
 /* ========================================================================
@@ -236,24 +255,18 @@ a:hover {
 }
 
 /* ========================================================================
-   Register Overlay – Immersive Frutiger Aero + Glassmorphism
+   Register View – Immersive Frutiger Aero + Glassmorphism
    ======================================================================== */
-
-.register-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9000;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    overflow: hidden;
-}
 
 /* ─── Ebene 1: Hintergrund-Slider ───────────────────────────── */
 
 .register-bg-slider {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
     overflow: hidden;
 }
 
@@ -368,7 +381,7 @@ a:hover {
     transform: translateX(-50%);
     display: flex;
     gap: 0.75rem;
-    z-index: 5;
+    z-index: 3;
 }
 
 .bg-slider-dot {
@@ -398,7 +411,7 @@ a:hover {
 
 .glass-auth-card {
     position: relative;
-    z-index: 10;
+    z-index: 2;
     width: 100%;
     max-width: 420px;
     margin-right: 8%;
@@ -904,8 +917,9 @@ body:has(.app-header) .theme-toggle-global {
 
 /* Register Overlay – Responsive */
 @media (max-width: 768px) {
-    .register-overlay {
+    #register-view-container {
         justify-content: center;
+        flex-direction: column;
     }
 
     .glass-auth-card {

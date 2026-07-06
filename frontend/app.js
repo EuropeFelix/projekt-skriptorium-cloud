@@ -6,7 +6,8 @@ const API_BASE = '/api';
 
 // ─── DOM References ──────────────────────────────────────────────────────
 
-const loginView = document.getElementById('login-view');
+const loginViewContainer = document.getElementById('login-view-container');
+const registerViewContainer = document.getElementById('register-view-container');
 const notesView = document.getElementById('notes-view');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
@@ -16,7 +17,6 @@ const themeToggle = document.getElementById('theme-toggle');
 const showRegisterLink = document.getElementById('show-register');
 const showLoginLink = document.getElementById('show-login');
 const loginCard = document.querySelector('.login-card');
-const registerCard = document.querySelector('.register-overlay');
 const loginError = document.getElementById('login-error');
 const registerError = document.getElementById('register-error');
 const notesError = document.getElementById('notes-error');
@@ -96,10 +96,10 @@ async function apiRequest(path, options = {}) {
 // ─── View Switching ──────────────────────────────────────────────────────
 
 function showLoginView() {
-    loginView.style.display = '';
-    notesView.style.display = 'none';
-    loginError.textContent = '';
-    registerError.textContent = '';
+    if (loginViewContainer) loginViewContainer.style.display = 'flex';
+    if (notesView) notesView.style.display = 'none';
+    if (loginError) loginError.textContent = '';
+    if (registerError) registerError.textContent = '';
 }
 
 function showNotesView() {
@@ -107,9 +107,9 @@ function showNotesView() {
         showLoginView();
         return;
     }
-    loginView.style.display = 'none';
-    notesView.style.display = '';
-    userDisplay.textContent = getUsername();
+    if (loginViewContainer) loginViewContainer.style.display = 'none';
+    if (notesView) notesView.style.display = '';
+    if (userDisplay) userDisplay.textContent = getUsername();
     loadNotes();
 }
 
